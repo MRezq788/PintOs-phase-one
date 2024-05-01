@@ -72,6 +72,7 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 bool compare_threads_piriority(const struct list_elem *a,const struct list_elem *b,void *aux UNUSED);
+bool thread_priority_compare(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED);
 
 
 /* Initializes the threading system by transforming the code
@@ -152,11 +153,18 @@ thread_tick (void)
     intr_yield_on_return ();
 }
 
+bool thread_priority_compare(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED)
+{
+    const int a_member = (list_entry(a, struct thread, readyelem)->priority);
+    const int b_member = (list_entry(b, struct thread, readyelem)->priority);
+    return a_member > b_member;
+}
+
 /* Prints thread statistics. */
 void
 thread_print_stats (void) 
 {
-  printf ("ttThread: %lld idle ticks, %lld kernel ticks, %lld user ticks\n",
+  printf ("Thread: %lld idle ticks, %lld kernel ticks, %lld user ticks\n",
           idle_ticks, kernel_ticks, user_ticks);
 }
 
@@ -256,7 +264,7 @@ thread_unblock (struct thread *t)
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
   if(thread_mlfqs){
-        list_insert_ordered(&ready_list, &t->readyelem, &compare_threads_piriority, NULL);} // return the tread  but in sorted way according to the priotiy
+        list_insert_ordered(&ready_list, &t->readyelem, &thread_priority_compare, NULL);} // return the tread  but in sorted way according to the priotiy
   else {
     list_insert_ordered(&ready_list,&(t->elem),&compare_threads_piriority,NULL);
   }
@@ -342,7 +350,7 @@ thread_yield (void)
   old_level = intr_disable ();
   if (cur != idle_thread) {
      if (thread_mlfqs){
-      list_insert_ordered(&ready_list, &cur->readyelem, &compare_threads_piriority, NULL);     // return the thread but in sorted way according to the priotiy
+      list_insert_ordered(&ready_list, &cur->readyelem, &thread_priority_compare, NULL);     // return the thread but in sorted way according to the priotiy
     }
     else{
       list_insert_ordered(&ready_list,&(cur->elem),&compare_threads_piriority,NULL); 
@@ -665,7 +673,7 @@ void mlfqs(int64_t ticks, int64_t freq, struct thread *t)
 {
     if (t != idle_thread) // update every tick
         t->recentCpu = converFirsttoFP_thenADD(1, t->recentCpu);
-    if ((ticks % freq)==0) // to be updated each second
+    if ((ticks % freq==0)) // to be updated each second
     {
         int prev_loadavg = multiplyTwoFP(converFirsttoFP_thenDivide(59, 60), loadAvg);
         int size = list_size(&ready_list);
@@ -705,7 +713,7 @@ void mlfqs(int64_t ticks, int64_t freq, struct thread *t)
             else if (finish->priority > 63)
                 finish->priority = PRI_MAX;
         }
-    list_sort(&ready_list, &compare_threads_piriority, NULL);
+    list_sort(&ready_list, &thread_priority_compare, NULL);
     }
 }
 
