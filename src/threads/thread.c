@@ -184,7 +184,7 @@ void mlfqs(int64_t ticks, int64_t freq, struct thread *t)
             }
         }
     }
-    else if (!(ticks % 4) && t != idle_thread)      //every 4 ticks and t not idle so i can put it in readylist .
+     if (!(ticks % 4) && t != idle_thread)      //every 4 ticks and t not idle so i can put it in readylist .
     {
         for (struct list_elem *iter = list_begin(&all_list); iter != list_end(&all_list); iter = list_next(iter))
         {
