@@ -673,7 +673,7 @@ void mlfqs(int64_t ticks, int64_t freq, struct thread *t)
 {
     if (t != idle_thread) // update every tick
         t->recentCpu = converFirsttoFP_thenADD(1, t->recentCpu);
-    if ((ticks % freq==0)) // to be updated each second
+    if (!(ticks % freq)) // to be updated each second
     {
         int prev_loadavg = multiplyTwoFP(converFirsttoFP_thenDivide(59, 60), loadAvg);
         int size = list_size(&ready_list);
@@ -701,7 +701,7 @@ void mlfqs(int64_t ticks, int64_t freq, struct thread *t)
             }
         }
     }
-    else if ((ticks % 4)==0 && t != idle_thread)      //every 4 ticks and t not idle so i can put it in readylist .
+    else if (!(ticks % 4) && t != idle_thread)      //every 4 ticks and t not idle so i can put it in readylist .
     {
         for (struct list_elem *iter = list_begin(&all_list); iter != list_end(&all_list); iter = list_next(iter))
         {
