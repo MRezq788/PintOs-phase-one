@@ -93,9 +93,10 @@ struct thread
     int priority;                       /* Priority. */
     int nice ;                           /*nice. */
     int recentCpu;
+    int64_t ticks ;
     struct list_elem allelem;           /* List element for all threads list. */
     struct list_elem readyelem;
-
+    struct list_elem blockedelem  ;       /*List element for blocked thread list*/
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
 
@@ -144,4 +145,8 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 bool compare_threads_piriority(const struct list_elem *a,const struct list_elem *b,void *aux UNUSED) ;
+bool
+comparison(struct list_elem *a,struct list_elem *b,void*aux UNUSED) ;
+void unblockChecker(int64_t minTicks) ;
+
 #endif /* threads/thread.h */

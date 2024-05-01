@@ -152,6 +152,59 @@ thread_tick (void)
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
 }
+void mlfqs(int64_t ticks, int64_t freq, struct thread *t)
+{
+    if (t != idle_thread) // update every tick
+        t->recentCpu = converFirsttoFP_thenADD(1, t->recentCpu);
+    if (!(ticks % freq)) // to be updated each second
+    {
+        int prev_loadavg = multiplyTwoFP(converFirsttoFP_thenDivide(59, 60), loadAvg);
+        int size = list_size(&ready_list);
+      
+        if (t != idle_thread){
+            size += 1;
+        }
+      
+        int ready_Threads = converFirsttoFP_thenDivide(size, 60);
+         if(flag==1){ready_Threads=0;}
+        loadAvg = prev_loadavg + ready_Threads;
+        for (struct list_elem *iteratee = list_begin(&all_list); iteratee != list_end(&all_list); iteratee = list_next(iteratee))
+        {
+            struct thread *lastthread = list_entry(iteratee, struct thread, allelem);
+            if (lastthread != idle_thread)
+            {
+                prev_loadavg = divideTwoFP(Multiply(2, loadAvg),converFirsttoFP_thenADD(1, Multiply(2, loadAvg)));
+                lastthread->recentCpu = converFirsttoFP_thenADD(lastthread->nice,multiplyTwoFP(prev_loadavg, lastthread->recentCpu));
+                lastthread->priority = converFirsttoFP_thenADD(Multiply(-2, lastthread->nice), converFirsttoFP_thenADD(PRI_MAX, Divide(lastthread->recentCpu, -4)));
+                lastthread->priority = convertTOInt(lastthread->priority);
+                if (lastthread->priority < 0)
+                    lastthread->priority = PRI_MIN;
+                else if (lastthread->priority > 63)
+                    lastthread->priority = PRI_MAX;
+            }
+        }
+    }
+    else if (!(ticks % 4) && t != idle_thread)      //every 4 ticks and t not idle so i can put it in readylist .
+    {
+        for (struct list_elem *iter = list_begin(&all_list); iter != list_end(&all_list); iter = list_next(iter))
+        {
+            struct thread *finish = list_entry(iter, struct thread, allelem);
+            finish->priority = converFirsttoFP_thenADD(Multiply(-2, finish->nice), converFirsttoFP_thenADD(PRI_MAX, Divide(finish->recentCpu, -4)));
+            finish->priority = convertTOInt(finish->priority);
+            if (finish->priority < 0)
+                finish->priority = PRI_MIN;
+            else if (finish->priority > 63)
+                finish->priority = PRI_MAX;
+        }
+    list_sort(&ready_list, &thread_priority_compare, NULL);
+    }
+}
+bool
+comparison(struct list_elem *a,struct list_elem *b,void*aux UNUSED){
+    struct thread* t1 = list_entry(a , struct thread , blockedelem) ;
+    struct thread* t2 = list_entry(b , struct thread , blockedelem) ;
+    return t1->ticks < t2->ticks;
+}
 
 bool thread_priority_compare(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED)
 {
@@ -669,51 +722,4 @@ allocate_tid (void)
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
-void mlfqs(int64_t ticks, int64_t freq, struct thread *t)
-{
-    if (t != idle_thread) // update every tick
-        t->recentCpu = converFirsttoFP_thenADD(1, t->recentCpu);
-    if (!(ticks % freq)) // to be updated each second
-    {
-        int prev_loadavg = multiplyTwoFP(converFirsttoFP_thenDivide(59, 60), loadAvg);
-        int size = list_size(&ready_list);
-      
-        if (t != idle_thread){
-            size += 1;
-        }
-      
-        int ready_Threads = converFirsttoFP_thenDivide(size, 60);
-         if(flag==1){ready_Threads=0;}
-        loadAvg = prev_loadavg + ready_Threads;
-        for (struct list_elem *iteratee = list_begin(&all_list); iteratee != list_end(&all_list); iteratee = list_next(iteratee))
-        {
-            struct thread *lastthread = list_entry(iteratee, struct thread, allelem);
-            if (lastthread != idle_thread)
-            {
-                prev_loadavg = divideTwoFP(Multiply(2, loadAvg),converFirsttoFP_thenADD(1, Multiply(2, loadAvg)));
-                lastthread->recentCpu = converFirsttoFP_thenADD(lastthread->nice,multiplyTwoFP(prev_loadavg, lastthread->recentCpu));
-                lastthread->priority = converFirsttoFP_thenADD(Multiply(-2, lastthread->nice), converFirsttoFP_thenADD(PRI_MAX, Divide(lastthread->recentCpu, -4)));
-                lastthread->priority = convertTOInt(lastthread->priority);
-                if (lastthread->priority < 0)
-                    lastthread->priority = PRI_MIN;
-                else if (lastthread->priority > 63)
-                    lastthread->priority = PRI_MAX;
-            }
-        }
-    }
-    else if (!(ticks % 4) && t != idle_thread)      //every 4 ticks and t not idle so i can put it in readylist .
-    {
-        for (struct list_elem *iter = list_begin(&all_list); iter != list_end(&all_list); iter = list_next(iter))
-        {
-            struct thread *finish = list_entry(iter, struct thread, allelem);
-            finish->priority = converFirsttoFP_thenADD(Multiply(-2, finish->nice), converFirsttoFP_thenADD(PRI_MAX, Divide(finish->recentCpu, -4)));
-            finish->priority = convertTOInt(finish->priority);
-            if (finish->priority < 0)
-                finish->priority = PRI_MIN;
-            else if (finish->priority > 63)
-                finish->priority = PRI_MAX;
-        }
-    list_sort(&ready_list, &thread_priority_compare, NULL);
-    }
-}
 
