@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Pintos
 
 ## About
@@ -9,10 +8,10 @@ PintOS is an open source instructional operating system kernel developed by Stan
 
 The project is divided into four phases:
 
-* P1: Threads
-* P2: User Programs
-* P3: Virtual Memory
-* P4: File Systems
+* <span style="background-color: #008000">P1: Thread</span>
+* <span style="background-color: #008000">P2: User Programs</span>
+* <span style="background-color: #008000">P3: Virtual Memory</span>
+* <span style="background-color: #008000">P4: File Systems</span>
 
 ## Source Code
 
