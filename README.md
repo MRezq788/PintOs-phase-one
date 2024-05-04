@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Pintos
 
 ## About
@@ -52,3 +53,6 @@ Here's a list of sessions I made (in Arabic) for Alexandria University, explaini
 Below is a student's guide on utilizing Git.
 
 1. [ArmaGit](https://github.com/Armaritto/ArmaGit)
+=======
+# pp
+>>>>>>> 7dd2e0414ffedb24756a252a001855431a3f5cdc

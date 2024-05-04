@@ -72,6 +72,8 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 bool compare_threads_piriority(const struct list_elem *a,const struct list_elem *b,void *aux UNUSED);
+void
+thread_set_priority_donation (int donated_priority,struct thread * t); 
 bool thread_priority_compare(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED);
 
 
@@ -96,7 +98,7 @@ thread_init (void)
   lock_init (&tid_lock);
   list_init (&ready_list);
   list_init (&all_list);
-
+  
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
   init_thread (initial_thread, "main", PRI_DEFAULT);
@@ -275,9 +277,8 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
   // dewe start
-  if (thread_current()->priority < t->priority) {
+  if (thread_current()->priority < t->priority)
       thread_yield();
-  }
   // dewe end
 
   return tid;
@@ -433,13 +434,30 @@ thread_foreach (thread_action_func *func, void *aux)
 }
 
 /* Sets the current thread's priority to NEW_PRIORITY. */
+// dewe start
+ void
+thread_set_priority_donation (int donated_priority,struct thread * t) 
+{
+  enum intr_level old_level= intr_disable();
+  t->is_donated=true;
+  t->priority = donated_priority;
+      // THREAD_BLOCKED,     
+  if (t->status == THREAD_READY)
+    list_sort (&ready_list, &compare_threads_piriority, NULL);
+  else
+    list_sort (&t->lock_waited_on->semaphore.waiters, &compare_threads_piriority, NULL);
+  intr_enable();
+}
+// dewe end
 void
 thread_set_priority (int new_priority) 
 {
   int old_priority = thread_current ()->priority;
+  if (!thread_current()->is_donated || new_priority>old_priority) {
   thread_current ()->priority = new_priority;
+  }
   //dewe start
-  list_sort (&all_list, &compare_threads_piriority, NULL);
+   thread_current ()->last_piriority = new_priority;
   if (old_priority > new_priority) {
     thread_yield();
   }
@@ -592,6 +610,11 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
+  //dewe start
+  t->is_donated = false;
+  t->last_piriority=priority;
+  list_init(&t->held_locks);
+  //dewe end
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
@@ -604,6 +627,7 @@ init_thread (struct thread *t, const char *name, int priority)
 static void *
 alloc_frame (struct thread *t, size_t size) 
 {
+  
   /* Stack data is always allocated in word-size units. */
   ASSERT (is_thread (t));
   ASSERT (size % sizeof (uint32_t) == 0);
