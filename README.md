@@ -8,10 +8,10 @@ PintOS is an open source instructional operating system kernel developed by Stan
 
 The project is divided into four phases:
 
-* <span style="background-color: #008000">P1: Thread</span>
-* <span style="background-color: #008000">P2: User Programs</span>
-* <span style="background-color: #008000">P3: Virtual Memory</span>
-* <span style="background-color: #008000">P4: File Systems</span>
+* P1: Thread {style="background-color: #008000; color: white; padding: 3px; border-radius: 3px;"}
+* P2: User Programs {style="background-color: #008000; color: white; padding: 3px; border-radius: 3px;"}
+* P3: Virtual Memory {style="background-color: #008000; color: white; padding: 3px; border-radius: 3px;"}
+* P4: File Systems {style="background-color: #008000; color: white; padding: 3px; border-radius: 3px;"}
 
 ## Source Code
 
@@ -24,12 +24,6 @@ Last adopted commit details:
 * URL: [f685123e5f8e7c84648b2de810ba20e85b7d1504](https://pintos-os.org/cgi-bin/gitweb.cgi?p=pintos-anon;a=commit;h=f685123e5f8e7c84648b2de810ba20e85b7d1504)
 
 To download the most recent code from [PintOS-OS](https://pintos-os.org/) directly, use the following [link](https://pintos-os.org/cgi-bin/gitweb.cgi?p=pintos-anon;a=snapshot;h=HEAD).
-
-## Installation Guidelines
-
-To install PintOS natively, please use the guidelines listed at the [installation document](Installation.md).
-
-To install PintOS with docker, please use the guidelines listed at the [installation with docker document](Installation_with_docker.md).
 
 ## Project Documents
 
