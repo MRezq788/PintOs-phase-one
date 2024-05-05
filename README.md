@@ -17,12 +17,6 @@ The project is divided into four phases:
 
 Source code is adopted from the open source project at [PintOS-OS](https://pintos-os.org/), we will try to keep this repository in sync with the official repository at [PintOS-OS Official Repository](https://pintos-os.org/cgi-bin/gitweb.cgi?p=pintos-anon;a=summary).
 
-Last adopted commit details:
-
-* Comment: random: Fix behavior of kernel option "-rs". master
-* Date: Sat, 29 May 2021 19:05:19 +0000 (12:05 -0700)
-* URL: [f685123e5f8e7c84648b2de810ba20e85b7d1504](https://pintos-os.org/cgi-bin/gitweb.cgi?p=pintos-anon;a=commit;h=f685123e5f8e7c84648b2de810ba20e85b7d1504)
-
 To download the most recent code from [PintOS-OS](https://pintos-os.org/) directly, use the following [link](https://pintos-os.org/cgi-bin/gitweb.cgi?p=pintos-anon;a=snapshot;h=HEAD).
 
 ## Project Documents
